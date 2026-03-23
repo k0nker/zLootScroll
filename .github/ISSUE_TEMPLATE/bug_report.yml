@@ -1,0 +1,58 @@
+name: Bug report
+description: Create a report to help us improve
+title: "[BUG] "
+labels: [bug]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please fill out the fields below with as much detail as you can.
+
+  - type: input
+    id: short_description
+    attributes:
+      label: Describe the bug
+      description: A one-line summary of the bug.
+      placeholder: "e.g. Quest tracker disappears when switching zones"
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: To Reproduce
+      description: |
+        Steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+      placeholder: A clear and concise description of the expected behavior.
+
+  - type: textarea
+    id: version_info
+    attributes:
+      label: Version Information
+      description: Fill in the version numbers next to each label.
+      value: |
+        WoW: 
+        Addon: 
+
+  - type: textarea
+    id: lua_error
+    attributes:
+      label: LUA Error
+      description: Paste the full Lua error and stacktrace. Will be displayed as a scrollable code block — no backticks needed.
+      placeholder: "<paste error here>"
+      render: lua
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other information that might help diagnose the issue.
+      placeholder: Add any other context here.

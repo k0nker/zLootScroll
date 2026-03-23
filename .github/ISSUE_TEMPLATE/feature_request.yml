@@ -1,0 +1,37 @@
+name: Feature request
+description: Create a feature request
+title: "[FEATURE] "
+labels: [enhancement]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion — please provide details below so we can evaluate it.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Describe the feature
+      description: A short summary of the requested feature.
+      placeholder: "e.g. Allow collapsing trackers by category"
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details and rationale
+      description: Explain why this would be useful and how you expect it to work.
+      placeholder: Provide detailed description, examples, and any suggested behavior.
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Screenshots / Mockups
+      description: Paste or link mockups/screenshots.
+      placeholder: Paste images or links here.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other context that would help assess this request.
