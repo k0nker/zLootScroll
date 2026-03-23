@@ -1,6 +1,7 @@
 .github/copilot-instructions.md
 References/
 Reference/
+Planning/
 *.zip
 venv/
 __pycache__/
