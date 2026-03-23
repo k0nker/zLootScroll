@@ -4,6 +4,7 @@
 
 local L   = zLS.L
 local LSM = LibStub("LibSharedMedia-3.0")
+local zSF = LibStub("zSettingsFrame-1.0")
 
 local function LSM_Values(mediaType)
     local t = {}
@@ -106,9 +107,9 @@ ZSL_ZSF_SCHEMA = {
                 widthBlizzard = "full",
                 name = L.OPT_MSG_DURATION,
                 desc = L.OPT_MSG_DURATION_DESC,
-                min = 0.5,
-                max = 600,
-                step = 0.5
+                min = 0,
+                max = 300,
+                step = 0.5,
             },
 
             { widgetType = "header" },
@@ -454,6 +455,182 @@ ZSL_ZSF_SCHEMA = {
                 name       = L.OPT_RESET_COLORS,
                 width      = "third",
                 resetKeys  = { "colorByQuality", "colorMoney", "colorTimestamp", "colorCount", "colorIncrement" },
+            },
+        },
+    },
+
+    -- ── History ──────────────────────────────────────────────────────────────
+    -- Account-wide loot log retention settings. Not tied to any profile.
+    {
+        widgetType = "nav",
+        name       = L.OPT_HISTORY,
+        children   = {
+            {
+                widgetType = "text",
+                name       = L.OPT_HISTORY_NOTICE,
+                widthBlizzard = "full",
+            },
+
+            { widgetType = "header" },
+
+            {
+                widgetType    = "toggle",
+                widthBlizzard = "full",
+                name          = L.OPT_KEEP_FOREVER,
+                desc          = L.OPT_KEEP_FOREVER_DESC,
+                get           = function() return zLS.db.global.keepForever end,
+                set           = function(v) zLS.db.global.keepForever = v end,
+            },
+
+            {
+                widgetType    = "range",
+                widthBlizzard = "full",
+                name          = L.OPT_HISTORY_LENGTH,
+                desc          = L.OPT_HISTORY_LENGTH_DESC,
+                min           = 50,
+                max           = 2000,
+                step          = 25,
+                get           = function() return zLS.db.global.historyLength end,
+                set           = function(v) zLS.db.global.historyLength = v end,
+                disableWhen   = function() return zLS.db.global.keepForever end,
+            },
+        },
+    },
+
+    -- ── Profiles ──────────────────────────────────────────────────────────────
+    -- Create, copy, delete, and reset settings profiles.
+    {
+        widgetType = "nav",
+        name       = L.OPT_PROFILES,
+        children   = {
+            { widgetType = "header", name = L.OPT_PROFILE_ACTIVE },
+
+            {
+                widgetType = "select",
+                widthBlizzard = "full",
+                name       = L.OPT_PROFILE_CURRENT,
+                desc       = L.OPT_PROFILE_CURRENT_DESC,
+                values     = function()
+                    local profiles = {}
+                    for _, name in pairs(zLS.db:GetProfiles()) do
+                        profiles[name] = name
+                    end
+                    return profiles
+                end,
+                get = function() return zLS.db:GetCurrentProfile() end,
+                set = function(v)
+                    zLS.db:SetProfile(v)
+                    zSF.RefreshAll(true)
+                end,
+            },
+
+            {
+                widgetType    = "input",
+                widthBlizzard = "full",
+                name          = L.OPT_PROFILE_NEW,
+                desc          = L.OPT_PROFILE_NEW_DESC,
+                get           = function() return "" end,
+                set           = function(v)
+                    if v and v ~= "" then
+                        zLS.db:SetProfile(v)
+                    end
+                    zSF.RefreshAll(true)
+                end,
+            },
+
+            { widgetType = "header", name = L.OPT_PROFILE_COPY_HEADER },
+
+            {
+                widgetType    = "select",
+                width         = "half",
+                widthBlizzard = "full",
+                divider       = false,
+                name          = L.OPT_PROFILE_COPY_SOURCE,
+                desc          = L.OPT_PROFILE_COPY_SOURCE_DESC,
+                values        = function()
+                    local profiles = {}
+                    local cur = zLS.db:GetCurrentProfile()
+                    for _, name in pairs(zLS.db:GetProfiles()) do
+                        if name ~= cur then profiles[name] = name end
+                    end
+                    return profiles
+                end,
+                get = function() return zLS._profileCopySource end,
+                set = function(v) zLS._profileCopySource = v end,
+            },
+
+            { widgetType = "filler", width = "quarter", divider = false },
+
+            {
+                widgetType    = "button",
+                width         = "quarter",
+                name          = L.OPT_PROFILE_COPY,
+                desc          = L.OPT_PROFILE_COPY_DESC,
+                iconAtlas     = "orderhalltalents-choice-arrow-large",
+                confirm       = L.OPT_PROFILE_COPY_CONFIRM,
+                disableWhen   = function() return not zLS._profileCopySource end,
+                func          = function()
+                    zLS.db:CopyProfile(zLS._profileCopySource)
+                    print("|cff00ccff" .. zLS.L.MSG_PROFILE_COPIED .. zLS._profileCopySource .. "|r")
+                    zLS._profileCopySource = nil
+                    zSF.RefreshAll(true)
+                end,
+            },
+
+            { widgetType = "header", name = L.OPT_PROFILE_DELETE_HEADER },
+
+            {
+                widgetType    = "select",
+                width         = "half",
+                widthBlizzard = "full",
+                divider       = false,
+                name          = L.OPT_PROFILE_DELETE_TARGET,
+                desc          = L.OPT_PROFILE_DELETE_TARGET_DESC,
+                values        = function()
+                    local profiles = {}
+                    local cur = zLS.db:GetCurrentProfile()
+                    for _, name in pairs(zLS.db:GetProfiles()) do
+                        if name ~= cur then profiles[name] = name end
+                    end
+                    return profiles
+                end,
+                get = function() return zLS._profileDeleteTarget end,
+                set = function(v) zLS._profileDeleteTarget = v end,
+            },
+
+            { widgetType = "filler", width = "quarter", divider = false },
+
+            {
+                widgetType    = "button",
+                width         = "quarter",
+                name          = L.OPT_PROFILE_DELETE,
+                desc          = L.OPT_PROFILE_DELETE_DESC,
+                iconAtlas     = "common-icon-delete",
+                confirm       = L.OPT_PROFILE_DELETE_CONFIRM,
+                disableWhen   = function() return not zLS._profileDeleteTarget end,
+                func          = function()
+                    local name = zLS._profileDeleteTarget
+                    zLS.db:DeleteProfile(name, true)
+                    print("|cff00ccff" .. zLS.L.MSG_PROFILE_DELETED .. name .. "|r")
+                    zLS._profileDeleteTarget = nil
+                    zSF.RefreshAll(true)
+                end,
+            },
+
+            { widgetType = "header", name = L.OPT_PROFILE_RESET_HEADER },
+
+            {
+                widgetType    = "button",
+                width         = "third",
+                divider       = false,
+                name          = L.OPT_PROFILE_RESET,
+                desc          = L.OPT_PROFILE_RESET_DESC,
+                showResetIcon = true,
+                confirm       = L.OPT_PROFILE_RESET_CONFIRM,
+                func          = function()
+                    zLS.db:ResetProfile()
+                    zSF.RefreshAll(true)
+                end,
             },
         },
     },

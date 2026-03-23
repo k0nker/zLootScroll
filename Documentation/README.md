@@ -25,7 +25,7 @@ Type `/zls` to open the settings panel. That's it. The feed appears on screen at
 | `/zls` | Open the settings panel |
 | `/zls toggle` | Show or hide the feed frame |
 | `/zls move` | Unlock the frame so you can drag it |
-| `/zls clear` | Clear all current messages from the feed |
+| `/zls clear` | Clear the feed and erase the saved loot log |
 | `/zls help` | Print the command list to chat |
 
 ---
@@ -43,7 +43,8 @@ Controls what gets shown and how the feed behaves.
 - **Show Items / Show Currency / Show Money** — Enable or disable each category independently
 - **Insert Mode** — Choose whether new messages appear at the top or the bottom of the feed
 - **Max Lines** — How many messages the feed holds before old ones roll off (5–100)
-- **Fade Duration** — How many seconds a message stays visible before fading out (0.5–60)
+- **Fade Duration** — How many seconds a message stays visible before fading out (0.5–600)
+- **Keep Forever** — Messages never fade. When enabled, Fade Duration is ignored.
 
 ### Display
 
@@ -76,6 +77,19 @@ Controls the typeface and colors.
 ## Tooltips
 
 When the feed is locked, hovering over an item link in the feed will show its standard game tooltip. The frame is otherwise fully click-through — it won't block you from clicking anything behind it.
+
+---
+
+## Loot Log
+
+zLootScroll keeps a rolling history of the last 250 entries per character in your saved variables. This serves two purposes:
+
+- **Restore on reload** — If a UI reload or relog happens and an entry is still within its fade window, it reappears in the feed automatically.
+- **Keep Forever** — When enabled, the entire log is always shown and nothing ever expires from the feed.
+
+The log redraws in real time whenever you change display settings, so toggling options like icons, timestamps, or colors updates everything already in the feed immediately.
+
+Use `/zls clear` to wipe the log and clear the feed.
 
 ---
 

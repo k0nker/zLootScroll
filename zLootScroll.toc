@@ -3,19 +3,20 @@
 ## Title: zLootScroll
 ## Notes: Displays a scrolling feed of looted items, currency, and money.
 ## Author: kyoraei
-## Version: 2026.0323.01
+## Version: 2026.0323.02
 ## IconTexture: Interface\AddOns\zLootScroll\zls.png
 
 
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 
-## SavedVariables: zLSSaved
+## SavedVariables: zLootScrollDB
 
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
 Libs\LibSharedMedia-3.0\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0\lib.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\zSignalReact-1.0\zSignalReact-1.0.xml
 Libs\zSettingsFrame-1.0\zSettingsFrame-1.0.xml
 #@end-no-lib-strip@

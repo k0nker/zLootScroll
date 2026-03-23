@@ -23,6 +23,29 @@ local FRAME_SETTINGS_KEYS = {
     fontShadowOffsetY = true,
 }
 
+-- Keys that require a full message redraw when changed.
+-- ApplyFrameSettings runs first (registered earlier) so frame state is current.
+local REDRAW_KEYS = {
+    maxMessages     = true,
+    messageDuration = true,
+    showTimestamp  = true,
+    timestamp24hr  = true,
+    colorTimestamp = true,
+    colorCount     = true,
+    colorIncrement = true,
+    colorMoney     = true,
+    colorByQuality = true,
+    showItemIcon   = true,
+    iconSize       = true,
+    showItemLevel  = true,
+    showItemTotals = true,
+    amountFirst    = true,
+    insertMode     = true,
+    showItems      = true,
+    showCurrency   = true,
+    showMoney      = true,
+}
+
 -- ── Frame construction ────────────────────────────────────────────────────────
 
 function zLS:BuildFrame()
@@ -30,7 +53,9 @@ function zLS:BuildFrame()
     f:SetClampedToScreen(true)
     f:SetMovable(true)
     f:EnableMouse(false)
-    f:SetInsertMode(self:Get("insertMode") == "TOP" and "TOP" or "BOTTOM")
+    f:SetInsertMode(self:Get("insertMode") == "TOP"
+        and SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP
+        or  SCROLLING_MESSAGE_FRAME_INSERT_MODE_BOTTOM)
 
     local duration = self:Get("messageDuration")
     f:SetFading(duration > 0)
@@ -96,6 +121,12 @@ function zLS:BuildFrame()
         self:ApplyFrameSettings()
     end)
 
+    -- Redraw all logged messages whenever any display-affecting key changes.
+    -- Registered after FRAME_SETTINGS_KEYS so frame state is fresh before redraw.
+    self.store:RegisterEffectMap(REDRAW_KEYS, function()
+        self:RedrawFeed()
+    end)
+
     -- Toggle frame visibility when "enabled" changes.
     self.store:Subscribe("enabled", function(value)
         if self.frame then
@@ -137,7 +168,9 @@ function zLS:ApplyFrameSettings()
     local duration = self:Get("messageDuration")
     f:SetFading(duration > 0)
     f:SetTimeVisible(duration)
-    f:SetInsertMode(self:Get("insertMode") == "TOP" and "TOP" or "BOTTOM")
+    f:SetInsertMode(self:Get("insertMode") == "TOP"
+        and SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP
+        or  SCROLLING_MESSAGE_FRAME_INSERT_MODE_BOTTOM)
 
     f.bg:SetColorTexture(0, 0, 0, self:Get("bgAlpha"))
     if self:Get("showBackground") then f.bg:Show() else f.bg:Hide() end
@@ -147,7 +180,10 @@ end
 
 function zLS:SavePosition()
     local point, _, relPoint, x, y = self.frame:GetPoint()
-    self._charDB.frame = { point = point, relPoint = relPoint, x = x, y = y }
+    self._charDB.frame.point    = point
+    self._charDB.frame.relPoint = relPoint
+    self._charDB.frame.x        = x
+    self._charDB.frame.y        = y
 end
 
 function zLS:RestorePosition()
@@ -180,6 +216,35 @@ function zLS:SetMovable(enable)
         self.frame:EnableMouseWheel(false)
         self.frame:SetScript("OnMouseWheel", nil)
         self.frame.drag.moveOverlay:Hide()
+    end
+end
+
+-- ── Redraw feed from log ──────────────────────────────────────────────────────
+
+---Clear the frame and re-render every log entry that is still within its fade
+---window (or all entries when keepForever is on) using current settings.
+function zLS:RedrawFeed()
+    local f = self.frame
+    if not f then return end
+    f:Clear()
+
+    local log = self.lootLog
+    if not log or #log == 0 then return end
+
+    local now         = time()
+    local duration    = self:Get("messageDuration")
+
+    for _, entry in ipairs(log) do
+        -- duration == 0 means no fading; show everything in the log.
+        -- Otherwise only show entries still within the fade window.
+        local visible = duration == 0 or (now - entry.t) < duration
+        if visible then
+            -- RenderEntry is defined in Events.lua; safe to call at runtime.
+            local text, r, g, b = self:RenderEntry(entry)
+            if text then
+                f:AddMessage(text, r or 1, g or 1, b or 1)
+            end
+        end
     end
 end
 

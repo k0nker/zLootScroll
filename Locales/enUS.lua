@@ -28,7 +28,15 @@ zLS.L = {
     OPT_MAX_MESSAGES        = "Max Lines",
     OPT_MAX_MESSAGES_DESC   = "Maximum number of messages kept in the feed before old ones are removed.",
     OPT_MSG_DURATION        = "Fade Duration",
-    OPT_MSG_DURATION_DESC   = "How long a message stays visible before fading out.",
+    OPT_MSG_DURATION_DESC   = "How long a message stays visible before fading out. Set to 0 to disable fading entirely.",
+    OPT_KEEP_FOREVER        = "Keep Forever",
+    OPT_KEEP_FOREVER_DESC   = "Keep all loot history indefinitely. When off, history is trimmed to History Length.",
+
+    -- History panel (account-wide)
+    OPT_HISTORY             = "History",
+    OPT_HISTORY_NOTICE      = "These settings are account-wide and apply to all characters. They are not tied to any profile.",
+    OPT_HISTORY_LENGTH      = "History Length",
+    OPT_HISTORY_LENGTH_DESC = "Maximum number of loot entries stored per character. Oldest entries are removed when this limit is reached. Disabled when Keep Forever is on.",
     OPT_FONT_SIZE           = "Font Size",
     OPT_SHOW_ICON           = "Show Item Icons",
     OPT_SHOW_ICON_DESC      = "Prepend the item icon to each item message.",
@@ -89,6 +97,34 @@ zLS.L = {
     OPT_RESET_FONT          = "Reset Font",
     OPT_RESET_FONT_SHADOW   = "Reset Font Shadow",
     OPT_RESET_COLORS        = "Reset Colors",
+
+    -- Profiles panel
+    OPT_PROFILES                 = "Profiles",
+    OPT_PROFILE_ACTIVE           = "Active Profile",
+    OPT_PROFILE_CURRENT          = "Current Profile",
+    OPT_PROFILE_CURRENT_DESC     = "Select which settings profile to use for this character.",
+    OPT_PROFILE_NEW              = "New Profile",
+    OPT_PROFILE_NEW_DESC         = "Enter a name to create a new profile. The new profile will be copied from the current one.",
+    OPT_PROFILE_COPY_HEADER      = "Copy From Another Profile",
+    OPT_PROFILE_COPY_SOURCE      = "Source Profile",
+    OPT_PROFILE_COPY_SOURCE_DESC = "Select a profile to copy settings from into the current one.",
+    OPT_PROFILE_COPY             = "Copy Profile",
+    OPT_PROFILE_COPY_DESC        = "Copy all settings from the selected source into the current profile.",
+    OPT_PROFILE_COPY_CONFIRM     = "Overwrite the current profile with settings from the selected one?",
+    OPT_PROFILE_DELETE_HEADER    = "Delete a Profile",
+    OPT_PROFILE_DELETE_TARGET    = "Profile to Delete",
+    OPT_PROFILE_DELETE_TARGET_DESC = "Select the profile you want to permanently remove.",
+    OPT_PROFILE_DELETE           = "Delete Profile",
+    OPT_PROFILE_DELETE_DESC      = "Permanently delete the selected profile. This cannot be undone.",
+    OPT_PROFILE_DELETE_CONFIRM   = "Permanently delete the selected profile? This cannot be undone.",
+    OPT_PROFILE_RESET_HEADER     = "Reset Current Profile",
+    OPT_PROFILE_RESET            = "Reset Profile",
+    OPT_PROFILE_RESET_DESC       = "Reset all settings in the current profile back to their defaults.",
+    OPT_PROFILE_RESET_CONFIRM    = "Reset the current profile to default values? This cannot be undone.",
+
+    -- Profile change messages
+    MSG_PROFILE_COPIED  = "Copied settings from profile: ",
+    MSG_PROFILE_DELETED = "Deleted profile: ",
 
     -- Message prefixes
     PREFIX_ITEM             = "Item",
