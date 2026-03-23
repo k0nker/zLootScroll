@@ -107,8 +107,31 @@ ZSL_ZSF_SCHEMA = {
                 name = L.OPT_MSG_DURATION,
                 desc = L.OPT_MSG_DURATION_DESC,
                 min = 0.5,
-                max = 60,
+                max = 600,
                 step = 0.5
+            },
+
+            { widgetType = "header" },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_BEHAVIOR,
+                width      = "third",
+                resetKeys  = { "enabled", "lockFrame" },
+            },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_CATEGORIES,
+                width      = "third",
+                resetKeys  = { "showItems", "showCurrency", "showMoney" },
+            },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_FEED,
+                width      = "third",
+                resetKeys  = { "insertMode", "maxMessages", "messageDuration" },
             },
         },
     },
@@ -157,6 +180,25 @@ ZSL_ZSF_SCHEMA = {
                 widthBlizzard = "full",
                 name       = L.OPT_SHOW_TOTALS,
                 desc       = L.OPT_SHOW_TOTALS_DESC
+            },
+
+            {
+                widgetType = "toggle",
+                key        = "showTimestamp",
+                width      = "half",
+                widthBlizzard = "full",
+                name       = L.OPT_SHOW_TIMESTAMP,
+                desc       = L.OPT_SHOW_TIMESTAMP_DESC
+            },
+
+            {
+                widgetType  = "toggle",
+                key         = "timestamp24hr",
+                width       = "half",
+                widthBlizzard = "full",
+                name        = L.OPT_TIMESTAMP_24HR,
+                desc        = L.OPT_TIMESTAMP_24HR_DESC,
+                disableWhen = function() return not zLS:Get("showTimestamp") end
             },
 
             {
@@ -223,6 +265,29 @@ ZSL_ZSF_SCHEMA = {
                 min = 0.0,
                 max = 1.0,
                 step = 0.05
+            },
+
+            { widgetType = "header" },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_ITEMS,
+                width      = "third",
+                resetKeys  = { "showItemIcon", "iconSize", "showItemLevel", "showItemTotals", "showTimestamp", "timestamp24hr", "amountFirst" },
+            },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_FRAME,
+                width      = "third",
+                resetKeys  = { "frameWidth", "frameHeight", "lineSpacing" },
+            },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_BACKGROUND,
+                width      = "third",
+                resetKeys  = { "showBackground", "bgAlpha" },
             },
         },
     },
@@ -338,6 +403,57 @@ ZSL_ZSF_SCHEMA = {
                 widthBlizzard = "full",
                 name       = L.OPT_COLOR_MONEY,
                 desc       = L.OPT_COLOR_MONEY_DESC
+            },
+
+            {
+                widgetType  = "color",
+                key         = "colorTimestamp",
+                width       = "half",
+                widthBlizzard = "full",
+                name        = L.OPT_COLOR_TIMESTAMP,
+                desc        = L.OPT_COLOR_TIMESTAMP_DESC,
+                disableWhen = function() return not zLS:Get("showTimestamp") end
+            },
+
+            {
+                widgetType = "color",
+                key        = "colorCount",
+                width      = "half",
+                widthBlizzard = "full",
+                name       = L.OPT_COLOR_COUNT,
+                desc       = L.OPT_COLOR_COUNT_DESC
+            },
+
+            {
+                widgetType = "color",
+                key        = "colorIncrement",
+                width      = "half",
+                widthBlizzard = "full",
+                name       = L.OPT_COLOR_INCREMENT,
+                desc       = L.OPT_COLOR_INCREMENT_DESC
+            },
+
+            { widgetType = "header" },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_FONT,
+                width      = "third",
+                resetKeys  = { "fontFace", "fontOutline", "fontSize", "fontJustify" },
+            },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_FONT_SHADOW,
+                width      = "third",
+                resetKeys  = { "fontShadow", "fontShadowColor", "fontShadowOffsetX", "fontShadowOffsetY" },
+            },
+
+            {
+                widgetType = "button",
+                name       = L.OPT_RESET_COLORS,
+                width      = "third",
+                resetKeys  = { "colorByQuality", "colorMoney", "colorTimestamp", "colorCount", "colorIncrement" },
             },
         },
     },

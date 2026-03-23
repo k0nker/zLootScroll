@@ -48,6 +48,11 @@ zLS.defaults = {
     -- ── Message colors ────────────────────────────────────────────────────
     colorByQuality    = true,                -- tint items/currency by quality; false = white
     colorMoney        = { 1, 1, 0 },        -- RGB for money gain messages
+    showTimestamp     = false,              -- when true, prepend [HH:MM:SS] to each message
+    timestamp24hr     = true,               -- true = 24-hr clock; false = 12-hr (no AM/PM letters)
+    colorTimestamp    = { 0.01, 0.46, 0.58 },   -- color for the [HH:MM:SS] timestamp
+    colorCount        = { 0.68, 0.37, 0.37 },   -- color for the (N) bag and currency totals
+    colorIncrement    = { .81, .80, .38 },            -- color for the +N increment on looted stacks
 
     -- ── Default frame position (per-character fallback) ───────────────────
     defaultPoint      = "BOTTOMRIGHT",
@@ -55,3 +60,4 @@ zLS.defaults = {
     defaultX          = -20,
     defaultY          = 300,
 }
+

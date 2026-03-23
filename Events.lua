@@ -23,6 +23,24 @@ local function QualityColor(quality)
     return 1, 1, 1
 end
 
+---@param c number[] RGB table {r, g, b} in [0,1]
+---@return string hex six-character lowercase hex
+local function RGBToHex(c)
+    return string.format("%02x%02x%02x", math.floor(c[1]*255), math.floor(c[2]*255), math.floor(c[3]*255))
+end
+
+---@return string formatted [HH:MM:SS] time, 12-hr or 24-hr based on setting
+local function FormatTimestamp()
+    local h = tonumber(date("%H"))
+    local m = date("%M")
+    local s = date("%S")
+    if not zLS:Get("timestamp24hr") then
+        h = h % 12
+        if h == 0 then h = 12 end
+    end
+    return string.format("%02d:%s:%s", h, m, s)
+end
+
 -- ── CHAT_MSG_LOOT ──────────────────────────────────────────────────────────────
 
 local function HandleLoot(msg)
@@ -91,25 +109,29 @@ local function HandleLoot(msg)
     local nameStr = "|H" .. itemLink .. "|h|cff" ..
         string.format("%02x%02x%02x", math.floor(r*255), math.floor(g*255), math.floor(b*255)) ..
         "[" .. ilvlPrefix .. displayName .. "]|r|h"
-    local countStr = (amount and amount > 1) and ("+|cffffffff" .. amount .. "|r") or nil
+    local countStr = (amount and amount > 1) and ("+|cff" .. RGBToHex(zLS:Get("colorIncrement")) .. amount .. "|r") or nil
+
+    local showTS = zLS:Get("showTimestamp")
+    local timePart = showTS and ("|cff" .. RGBToHex(zLS:Get("colorTimestamp")) .. "[" .. FormatTimestamp() .. "]|r ") or ""
 
     local line
     if countStr then
         if zLS:Get("amountFirst") then
-            line = prefix .. countStr .. " " .. nameStr
+            line = timePart .. prefix .. countStr .. " " .. nameStr
         else
-            line = prefix .. nameStr .. " " .. countStr
+            line = timePart .. prefix .. nameStr .. " " .. countStr
         end
     else
-        line = prefix .. nameStr
+        line = timePart .. prefix .. nameStr
     end
 
     if zLS:Get("showItemTotals") and linkID and linkType ~= "battlepet" then
         local capturedLine = line
         local capturedR, capturedG, capturedB = r, g, b
+        local capturedCountHex = RGBToHex(zLS:Get("colorCount"))
         C_Timer.After(0.5, function()
             local total = C_Item.GetItemCount(itemLink, false, false, true) or 0
-            local totalStr = total > 1 and ("  |cffaaaaaa(" .. total .. ")|r") or ""
+            local totalStr = total > 1 and ("  |cff" .. capturedCountHex .. "(" .. total .. ")|r") or ""
             zLS:AddMessage(capturedLine .. totalStr, capturedR, capturedG, capturedB)
         end)
     else
@@ -151,6 +173,9 @@ local function HandleCurrency(msg)
         r, g, b = 1, 1, 1
     end
 
+    local showTS = zLS:Get("showTimestamp")
+    local timePart = showTS and ("|cff" .. RGBToHex(zLS:Get("colorTimestamp")) .. "[" .. FormatTimestamp() .. "]|r ") or ""
+
     local prefix = ""
     if zLS:Get("showItemIcon") and info.iconFileID then
         prefix = BuildIconPrefix(info.iconFileID, zLS:Get("iconSize"))
@@ -159,18 +184,18 @@ local function HandleCurrency(msg)
     local nameStr = "|cff" ..
         string.format("%02x%02x%02x", math.floor(r*255), math.floor(g*255), math.floor(b*255)) ..
         (info.name or "") .. "|r"
-    local countStr = amount and ("+|cffffffff" .. amount .. "|r") or nil
-    local totalStr = info.quantity and ("  |cffaaaaaa(" .. info.quantity .. ")|r") or ""
+    local countStr = amount and ("+|cff" .. RGBToHex(zLS:Get("colorIncrement")) .. amount .. "|r") or nil
+    local totalStr = info.quantity and ("  |cff" .. RGBToHex(zLS:Get("colorCount")) .. "(" .. info.quantity .. ")|r") or ""
 
     local line
     if countStr then
         if zLS:Get("amountFirst") then
-            line = prefix .. countStr .. " " .. nameStr
+            line = timePart .. prefix .. countStr .. " " .. nameStr
         else
-            line = prefix .. nameStr .. " " .. countStr
+            line = timePart .. prefix .. nameStr .. " " .. countStr
         end
     else
-        line = prefix .. nameStr
+        line = timePart .. prefix .. nameStr
     end
     line = line .. totalStr
 
@@ -198,7 +223,9 @@ local function HandleMoney(msg)
 
     local formatted = C_CurrencyInfo.GetCoinTextureString(totalCopper)
     local mc = zLS:Get("colorMoney")
-    zLS:AddMessage("+" .. formatted, mc[1], mc[2], mc[3])
+    local showTS = zLS:Get("showTimestamp")
+    local timePart = showTS and ("|cff" .. RGBToHex(zLS:Get("colorTimestamp")) .. "[" .. FormatTimestamp() .. "]|r ") or ""
+    zLS:AddMessage(timePart .. "+" .. formatted, mc[1], mc[2], mc[3])
 end
 
 -- ── Event registration ────────────────────────────────────────────────────────
