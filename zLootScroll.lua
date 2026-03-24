@@ -166,9 +166,9 @@ local function HandleSlash(input)
             print("|cff00ccff" .. zLS.L.CMD_MOVE_OFF .. "|r")
         end
 
-    elseif cmd == "clear" then
-        zLS:ClearLog()
-        print("|cff00ccff" .. zLS.L.CMD_CLEAR .. "|r")
+    --elseif cmd == "clear" then
+    --    zLS:ClearLog()
+    --    print("|cff00ccff" .. zLS.L.CMD_CLEAR .. "|r")
 
     elseif cmd == "browse" then
         zLS:OpenBrowser()

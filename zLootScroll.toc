@@ -3,7 +3,7 @@
 ## Title: zLootScroll
 ## Notes: Displays a scrolling feed of looted items, currency, and money.
 ## Author: kyoraei
-## Version: 2026.0324.01
+## Version: 2026.0324.03
 ## IconTexture: Interface\AddOns\zLootScroll\zls.png
 
 

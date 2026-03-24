@@ -1,6 +1,19 @@
 # CHANGELOG
 
-### 2026.0324.01
+## 2026.0324.03
+
+### Changes
+- Removed `/zls clear` destructive command as it was not needed
+
+---
+## 2026.0324.02
+
+### Bug Fixes
+- Fixed wording in dropdown for loot browser
+
+---
+
+## 2026.0324.01
 
 ### New Features
 - Loot Browser implemented for checking loot history

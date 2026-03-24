@@ -26,7 +26,6 @@ Type `/zls` to open the settings panel. That's it. The feed appears on screen at
 | `/zls toggle` | Show or hide the feed frame |
 | `/zls browse` | Open the loot history browser |
 | `/zls move` | Unlock the frame so you can drag it |
-| `/zls clear` | Clear the feed and erase the saved loot log |
 | `/zls help` | Print the command list to chat |
 
 ---
@@ -86,19 +85,19 @@ Controls what actually gets written to disk. These settings are **account-wide**
 
 **Keep Forever / History Length**
 
-- **Keep Forever** — When on, the log grows without any cap. Entries are never automatically removed. Useful if you want a complete lifetime record. Turning this on requires confirmation (memory warning); turning it back off also requires confirmation because the log will immediately be trimmed the next time you log in.
+- **Keep Forever** — When on, the log grows without any cap. Entries are never automatically removed. Useful if you want a complete lifetime record. Turning this on requires confirmation (memory warning); turning it back off also requires confirmation because the log will be trimmed the next time you log in or reload.
 - **History Length** — The maximum number of loot entries kept *per character* when Keep Forever is off. Defaults to 100, configurable from 50 to 2000 in steps of 25. When the log exceeds this cap at login, the oldest entries are removed first until the log fits within the limit. This slider is disabled while Keep Forever is on.
 
 **Item Quality**
 
-A toggle for each quality tier (Poor through Artifact). When a tier is enabled, drops of that quality are saved to the log as they happen. When you disable a tier, **all existing entries of that quality are permanently deleted across every character at the next login** — you will be prompted to confirm before any toggle that would cause deletion takes effect. Poor and Common tiers can be disabled without a confirmation prompt since those entries are usually low-value noise.
+A toggle for each quality tier (Poor through Artifact). When a tier is enabled, drops of that quality are saved to the log as they happen. When you disable a tier, **all existing entries of that quality are permanently deleted across every character at the next login or reload** — you will be prompted to confirm before any toggle that would cause deletion takes effect. Poor and Common tiers can be disabled without a confirmation prompt since those entries are usually low-value noise.
 
 **Entry Types**
 
 - **Store Money** — Log gold/silver/copper pickups. Disabling removes all existing money entries at next login.
 - **Store Currency** — Log token and special currency gains. Disabling removes all existing currency entries at next login.
 
-Note that storage settings only control what is *persisted to disk*. The live feed displays every event regardless of storage settings; pruning only affects what survives a reload.
+Note that storage settings only control what is *persisted to disk*. The live feed displays events configured in the General tab of settings; pruning only affects what survives a reload.
 
 ### Profiles
 
@@ -163,17 +162,11 @@ Every item drop, currency gain, and money pickup is appended to a per-character 
 
 **Real-time redraw** — The feed redraws in real time whenever you change display settings. Toggling icons, item level, quality filters, timestamps, or any other display option immediately updates everything already visible.
 
-Use `/zls clear` to permanently wipe the entire log for the current character and clear the feed.
-
 ---
 
 ## Frame Position
 
 The frame starts just above the center of the screen so it's easy to find on first install. Drag it anywhere with `/zls move`, then lock it again. Position is saved per profile, so different profiles can have the frame in different spots.
 
----
 
-## Requirements
-
-- World of Warcraft Retail (Interface 120001+)
-- No other addons required
+_NOTE: Issues must be reported via the Issues tab at the top of Curseforge. Issues reported in comments will be removed._

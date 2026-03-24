@@ -191,12 +191,12 @@ zLS.L = {
     BROWSER_QUALITY_LABEL    = "Quality",
     BROWSER_SEARCH_HINT      = "Search...",
     BROWSER_DATE_ANY         = "Any Date",
-    BROWSER_MONEY_INCLUDE    = "With Money",
-    BROWSER_MONEY_EXCLUDE    = "No Money",
-    BROWSER_MONEY_ONLY       = "Money Only",
-    BROWSER_CURRENCY_INCLUDE = "With Currency",
-    BROWSER_CURRENCY_EXCLUDE = "No Currency",
-    BROWSER_CURRENCY_ONLY    = "Currency Only",
+    BROWSER_MONEY_INCLUDE    = "Show Money",
+    BROWSER_MONEY_EXCLUDE    = "Hide Money",
+    BROWSER_MONEY_ONLY       = "Only Money",
+    BROWSER_CURRENCY_INCLUDE = "Show Currency",
+    BROWSER_CURRENCY_EXCLUDE = "Hide Currency",
+    BROWSER_CURRENCY_ONLY    = "Only Currency",
 
     -- Browser table column headers
     BROWSER_COL_DATETIME     = "Date / Time",
