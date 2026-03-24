@@ -53,6 +53,16 @@ ZSL_ZSF_SCHEMA = {
                 desc       = L.OPT_LOCK_FRAME_DESC
             },
 
+            {
+                widgetType = "toggle",
+                key        = "enableScrolling",
+                width      = "half",
+                widthBlizzard = "full",
+                name       = L.OPT_ENABLE_SCROLLING,
+                desc       = L.OPT_ENABLE_SCROLLING_DESC,
+                confirmOn  = L.OPT_ENABLE_SCROLLING_WARN
+            },
+
             { widgetType = "header", name = "Categories" },
 
             {
@@ -106,7 +116,7 @@ ZSL_ZSF_SCHEMA = {
                 name = L.OPT_MAX_MESSAGES,
                 desc = L.OPT_MAX_MESSAGES_DESC,
                 min = 5,
-                max = 100,
+                max = 500,
                 step = 1
             },
 

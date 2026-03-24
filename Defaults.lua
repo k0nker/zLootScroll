@@ -43,6 +43,7 @@ zLS.defaults = {
         bgAlpha           = 0.4,            -- backdrop alpha (0.0–1.0)
         showBorder        = false,          -- thin border around frame
         lockFrame         = true,           -- when true, disables mouse drag
+        enableScrolling  = false,          -- when true, allow mouse wheel scrolling and disable click-through
 
         -- ── Font ─────────────────────────────────────────────────────────
         fontFace          = "Friz Quadrata TT",  -- LSM font name

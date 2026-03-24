@@ -14,6 +14,7 @@ local FRAME_SETTINGS_KEYS = {
     insertMode        = true,
     showBackground    = true,
     bgAlpha           = true,
+    enableScrolling   = true,
     fontFace          = true,
     fontOutline       = true,
     fontJustify       = true,
@@ -122,6 +123,7 @@ function zLS:BuildFrame()
     self.frame = f
     self:RestorePosition()
     self:ApplyFrameSettings()
+    self:SetMovable(not self:Get("lockFrame"))
 
     if not self:Get("enabled") then f:Hide() end
 
@@ -145,9 +147,14 @@ function zLS:BuildFrame()
         end
     end)
 
-    -- Toggle draggability when "lockFrame" changes.
+    -- Toggle draggability and scrolling behavior when "lockFrame" changes.
     self.store:Subscribe("lockFrame", function(value)
         self:SetMovable(not value)
+    end)
+
+    -- Toggle scrolling behavior when "enableScrolling" changes.
+    self.store:Subscribe("enableScrolling", function()
+        self:SetMovable(not self:Get("lockFrame"))
     end)
 end
 
@@ -208,25 +215,47 @@ end
 
 function zLS:SetMovable(enable)
     if not self.frame then return end
+
+    local function wheelHandler(_, delta)
+        if delta > 0 then
+            self.frame:ScrollUp()
+        else
+            self.frame:ScrollDown()
+        end
+    end
+
     if enable then
         -- Move mode: drag overlay owns the mouse; disable on the frame itself so
         -- the overlay receives all input (tooltips won't fire, which is acceptable).
         self.frame:EnableMouse(false)
         self.frame.drag:EnableMouse(true)
         self.frame.drag:EnableMouseWheel(true)
-        self.frame:EnableMouseWheel(true)
-        self.frame:SetScript("OnMouseWheel", function(_, delta)
-            if delta > 0 then self.frame:ScrollUp() else self.frame:ScrollDown() end
-        end)
+
+        if self:Get("enableScrolling") then
+            self.frame:EnableMouseWheel(true)
+            self.frame:SetScript("OnMouseWheel", wheelHandler)
+        else
+            self.frame:EnableMouseWheel(false)
+            self.frame:SetScript("OnMouseWheel", nil)
+        end
+
         self.frame.drag.moveOverlay:Show()
     else
-        -- Locked: enable motion only so hyperlink hover fires, but clicks fall through.
+        -- Locked: enable motion only so hyperlink hover fires.
         self.frame:SetMouseMotionEnabled(true)
-        self.frame:SetMouseClickEnabled(false)
+
+        if self:Get("enableScrolling") then
+            self.frame:SetMouseClickEnabled(true)
+            self.frame:EnableMouseWheel(true)
+            self.frame:SetScript("OnMouseWheel", wheelHandler)
+        else
+            self.frame:SetMouseClickEnabled(false)
+            self.frame:EnableMouseWheel(false)
+            self.frame:SetScript("OnMouseWheel", nil)
+        end
+
         self.frame.drag:EnableMouse(false)
         self.frame.drag:EnableMouseWheel(false)
-        self.frame:EnableMouseWheel(false)
-        self.frame:SetScript("OnMouseWheel", nil)
         self.frame.drag.moveOverlay:Hide()
     end
 end
@@ -262,8 +291,30 @@ end
 
 -- ── AddMessage ────────────────────────────────────────────────────────────────
 
+function zLS:ScrollToLatest()
+    local f = self.frame
+    if not f or not self:Get("enableScrolling") then return end
+
+    -- Scroll to the newest message based on insert mode.
+    if self:Get("insertMode") == "TOP" then
+        if f.ScrollToTop then
+            f:ScrollToTop()
+        elseif f.SetScrollOffset then
+            f:SetScrollOffset(0)
+        end
+    else
+        if f.ScrollToBottom then
+            f:ScrollToBottom()
+        elseif f.SetScrollOffset then
+            f:SetScrollOffset(0)
+        end
+    end
+end
+
 function zLS:AddMessage(text, r, g, b)
     if not self:Get("enabled") then return end
     if not self.frame then return end
+
     self.frame:AddMessage(text, r or 1, g or 1, b or 1)
+    self:ScrollToLatest()
 end
