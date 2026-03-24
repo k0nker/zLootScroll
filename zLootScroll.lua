@@ -29,21 +29,13 @@ end
 
 -- ── Loot log ─────────────────────────────────────────────────────────────────
 
----Append an entry to the loot log.
----When keepForever is off the log is trimmed to historyLength (account-wide setting).
----When keepForever is on it grows unbounded (used by history features).
----@param entry table raw entry data (type, t, wallTime, plus type-specific fields)
+---Append an entry to the loot log. The live session log is unbounded;
+---PruneAllLogs() applies the history cap and type filters at login/reload.
+---@param entry table raw entry data (type, t, plus type-specific fields)
 function zLS:LogEntry(entry)
     local log = self.lootLog
     if not log then return end
     log[#log + 1] = entry
-    local g = zLS.db and zLS.db.global
-    if g and not g.keepForever then
-        local cap = g.historyLength or 100
-        while #log > cap do
-            table.remove(log, 1)
-        end
-    end
 end
 
 ---Wipe the in-memory and persisted loot log, then clear the feed frame.
@@ -54,6 +46,18 @@ function zLS:ClearLog()
     if self.frame then
         self.frame:Clear()
     end
+end
+
+-- ── Helpers ──────────────────────────────────────────────────────────────────
+
+---Format n with thousands commas: 32521 → "32,521"
+---@param n number
+---@return string
+function zLS:FormatNumber(n)
+    if not n or n == 0 then return "0" end
+    local s = tostring(math.floor(n))
+    local result = s:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    return result:match("^,(.+)$") or result
 end
 
 -- ── Initialization ────────────────────────────────────────────────────────────
@@ -84,6 +88,8 @@ function zLS:Init()
     self.db.RegisterCallback(self, "OnProfileChanged", onProfileSwitch)
     self.db.RegisterCallback(self, "OnProfileReset",   onProfileSwitch)
     self.db.RegisterCallback(self, "OnProfileCopied",  onProfileSwitch)
+
+    zLS.zafCtx = zAddonFramework._contexts["zLootScroll"]
 
     self:BuildFrame()
     self:RegisterEvents()
@@ -141,6 +147,45 @@ SlashCmdList["ZLOOTSCROLL"] = HandleSlash
 
 -- ── Bootstrap frame (PLAYER_LOGIN) ───────────────────────────────────────────
 
+---Prune all characters' loot logs: remove entries for disabled storage types,
+---then apply the history cap (if keepForever is off). Runs once at login/reload.
+local function PruneAllLogs()
+    local g = zLS.db.global
+    if not g or not g.chars then return end
+    for _, chars in pairs(g.chars) do
+        for _, data in pairs(chars) do
+            local log = data.lootLog
+            if log then
+                -- 1. Remove entries for types disabled in storage settings.
+                for i = #log, 1, -1 do
+                    local e = log[i]
+                    local remove = false
+                    if e.type == "item" then
+                        local q = e.quality
+                        if     q == 0 and not g.storePoor      then remove = true
+                        elseif q == 1 and not g.storeCommon    then remove = true
+                        elseif q == 2 and not g.storeUncommon  then remove = true
+                        elseif q == 3 and not g.storeRare      then remove = true
+                        elseif q == 4 and not g.storeEpic      then remove = true
+                        elseif q == 5 and not g.storeLegendary then remove = true
+                        elseif q == 6 and not g.storeArtifact  then remove = true
+                        end
+                    elseif e.type == "money"    and not g.storeMoney    then remove = true
+                    elseif e.type == "currency" and not g.storeCurrency then remove = true
+                    end
+                    if remove then table.remove(log, i) end
+                end
+                -- 2. Apply history cap (if keepForever is off).
+                -- Log is oldest-first (index 1 = oldest); remove from front to keep newest.
+                if not g.keepForever then
+                    local cap = g.historyLength or 100
+                    while #log > cap do table.remove(log, 1) end
+                end
+            end
+        end
+    end
+end
+
 local bootFrame = CreateFrame("Frame")
 bootFrame:RegisterEvent("PLAYER_LOGIN")
 bootFrame:SetScript("OnEvent", function(self, event)
@@ -177,6 +222,7 @@ bootFrame:SetScript("OnEvent", function(self, event)
         g.chars[realm][charName].lootLog = g.chars[realm][charName].lootLog or {}
         zLS.lootLog = g.chars[realm][charName].lootLog
 
+        PruneAllLogs()
         zLS:Init()
     end
 end)

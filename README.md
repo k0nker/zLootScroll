@@ -41,6 +41,7 @@ Controls what gets shown and how the feed behaves.
 - **Enable Loot Feed** — Master on/off switch for the entire feed
 - **Lock Frame** — Prevent the frame from being accidentally moved; also toggleable with `/zls move`
 - **Show Items / Show Currency / Show Money** — Enable or disable each category independently
+- **Quality Filters** — Show or hide items by quality tier (Poor through Legendary/Artifact) independently
 - **Insert Mode** — Choose whether new messages appear at the top or the bottom of the feed
 - **Max Lines** — How many messages the feed holds before old ones roll off (5–100)
 - **Fade Duration** — How many seconds a message stays visible before fading out (0.5–600)
@@ -76,18 +77,22 @@ Controls the typeface and colors.
 
 ## Tooltips
 
-When the feed is locked, hovering over an item link in the feed will show its standard game tooltip. The frame is otherwise fully click-through — it won't block you from clicking anything behind it.
+When the feed is locked, hovering over an item or currency link in the feed will show its standard game tooltip. The frame is otherwise fully click-through — it won't block you from clicking anything behind it.
 
 ---
 
 ## Loot Log
 
-zLootScroll keeps a rolling history of the last 250 entries per character in your saved variables. This serves two purposes:
+zLootScroll keeps a rolling history of loot entries per character in your saved variables (default: the last 100; configurable up to 2,000). This serves two purposes:
 
 - **Restore on reload** — If a UI reload or relog happens and an entry is still within its fade window, it reappears in the feed automatically.
 - **Keep Forever** — When enabled, the entire log is always shown and nothing ever expires from the feed.
 
-The log redraws in real time whenever you change display settings, so toggling options like icons, timestamps, or colors updates everything already in the feed immediately.
+The log redraws in real time whenever you change display settings, so toggling options like icons, timestamps, or quality filters updates everything already in the feed immediately.
+
+### Log Storage
+
+The **Log Storage** settings panel lets you control which entry types and item quality tiers are actually saved to disk. When a tier or type is disabled, matching entries are removed from all characters' logs at the next login or reload. Changes that delete data prompt for confirmation.
 
 Use `/zls clear` to wipe the log and clear the feed.
 

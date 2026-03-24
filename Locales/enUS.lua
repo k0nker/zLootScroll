@@ -35,6 +35,8 @@ zLS.L = {
     OPT_MSG_DURATION_DESC   = "How long a message stays visible before fading out. Set to 0 to disable fading entirely.",
     OPT_KEEP_FOREVER        = "Keep Forever",
     OPT_KEEP_FOREVER_DESC   = "Keep all loot history indefinitely. When off, history is trimmed to History Length.",
+    OPT_KEEP_FOREVER_WARN_E = "Keeping all history forever may lead to very large memory usage over time. Are you sure you want to enable this?",
+    OPT_KEEP_FOREVER_WARN_D = "Disabling Keep Forever will permanently delete all but the most recent entries up to the History Length limit at next login. Are you sure you want to disable this?",
 
     -- History panel (account-wide)
     OPT_HISTORY             = "History",
@@ -134,4 +136,60 @@ zLS.L = {
     PREFIX_ITEM             = "Item",
     PREFIX_CURRENCY         = "Currency",
     PREFIX_MONEY            = "Money",
+
+    -- \u2500\u2500 Quality display filters (0j) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    OPT_SHOW_QUALITY_HDR    = "Quality Filters",
+
+    OPT_SHOW_POOR           = "Poor",
+    OPT_SHOW_POOR_DESC      = "Show Poor (grey) quality items in the feed.",
+    OPT_SHOW_COMMON         = "Common",
+    OPT_SHOW_COMMON_DESC    = "Show Common (white) quality items in the feed.",
+    OPT_SHOW_UNCOMMON       = "Uncommon",
+    OPT_SHOW_UNCOMMON_DESC  = "Show Uncommon (green) quality items in the feed.",
+    OPT_SHOW_RARE           = "Rare",
+    OPT_SHOW_RARE_DESC      = "Show Rare (blue) quality items in the feed.",
+    OPT_SHOW_EPIC           = "Epic",
+    OPT_SHOW_EPIC_DESC      = "Show Epic (purple) quality items in the feed.",
+    OPT_SHOW_LEGENDARY      = "Legendary",
+    OPT_SHOW_LEGENDARY_DESC = "Show Legendary and Artifact (orange/gold) quality items in the feed.",
+
+    -- \u2500\u2500 Log Storage nav (0h/0i) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    OPT_NAV_STORAGE         = "Log Storage",
+
+    OPT_STORAGE_QUALITY_HDR = "Item Quality",
+    OPT_STORE_POOR          = "Store Poor",
+    OPT_STORE_POOR_DESC     = "Log Poor (grey) quality item drops. Disabling removes existing entries at next login.",
+    OPT_STORE_COMMON        = "Store Common",
+    OPT_STORE_COMMON_DESC   = "Log Common (white) quality item drops. Disabling removes existing entries at next login.",
+    OPT_STORE_UNCOMMON      = "Store Uncommon",
+    OPT_STORE_UNCOMMON_DESC = "Log Uncommon (green) quality item drops. Disabling removes existing entries at next login.",
+    OPT_STORE_RARE          = "Store Rare",
+    OPT_STORE_RARE_DESC     = "Log Rare (blue) quality item drops. Disabling removes existing entries at next login.",
+    OPT_STORE_EPIC          = "Store Epic",
+    OPT_STORE_EPIC_DESC     = "Log Epic (purple) quality item drops. Disabling removes existing entries at next login.",
+    OPT_STORE_LEGENDARY     = "Store Legendary",
+    OPT_STORE_LEGENDARY_DESC = "Log Legendary quality item drops. Disabling removes existing entries at next login.",
+    OPT_STORE_ARTIFACT      = "Store Artifact",
+    OPT_STORE_ARTIFACT_DESC = "Log Artifact quality item drops. Disabling removes existing entries at next login.",
+
+    OPT_STORAGE_TYPES_HDR   = "Entry Types",
+    OPT_STORE_MONEY         = "Store Money",
+    OPT_STORE_MONEY_DESC    = "Log gold/silver/copper gains. Disabling removes existing entries at next login.",
+    OPT_STORE_CURRENCY      = "Store Currency",
+    OPT_STORE_CURRENCY_DESC = "Log currency token gains. Disabling removes existing entries at next login.",
+
+    STORAGE_WARN_TURN_OFF   = "Disabling this will permanently delete matching entries from your log at next login. Continue?",
+
+    -- Browser filters
+    BROWSER_ALL              = "All",
+    BROWSER_RESET_FILTERS    = "Reset Filters",
+    BROWSER_QUALITY_LABEL    = "Quality",
+    BROWSER_SEARCH_HINT      = "Search...",
+    BROWSER_DATE_ANY         = "Any Date",
+    BROWSER_MONEY_INCLUDE    = "With Money",
+    BROWSER_MONEY_EXCLUDE    = "No Money",
+    BROWSER_MONEY_ONLY       = "Money Only",
+    BROWSER_CURRENCY_INCLUDE = "With Currency",
+    BROWSER_CURRENCY_EXCLUDE = "No Currency",
+    BROWSER_CURRENCY_ONLY    = "Currency Only",
 }

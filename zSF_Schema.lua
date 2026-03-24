@@ -79,6 +79,15 @@ ZSL_ZSF_SCHEMA = {
                 desc       = L.OPT_SHOW_MONEY_DESC
             },
 
+            { widgetType = "header", name = L.OPT_SHOW_QUALITY_HDR },
+
+            { widgetType = "toggle", key = "showPoor",      width = "half", name = L.OPT_SHOW_POOR,      desc = L.OPT_SHOW_POOR_DESC },
+            { widgetType = "toggle", key = "showCommon",    width = "half", name = L.OPT_SHOW_COMMON,    desc = L.OPT_SHOW_COMMON_DESC },
+            { widgetType = "toggle", key = "showUncommon",  width = "half", name = L.OPT_SHOW_UNCOMMON,  desc = L.OPT_SHOW_UNCOMMON_DESC },
+            { widgetType = "toggle", key = "showRare",      width = "half", name = L.OPT_SHOW_RARE,      desc = L.OPT_SHOW_RARE_DESC },
+            { widgetType = "toggle", key = "showEpic",      width = "half", name = L.OPT_SHOW_EPIC,      desc = L.OPT_SHOW_EPIC_DESC },
+            { widgetType = "toggle", key = "showLegendary", width = "half", name = L.OPT_SHOW_LEGENDARY, desc = L.OPT_SHOW_LEGENDARY_DESC },
+
             { widgetType = "header", name = "Feed" },
 
             {
@@ -125,7 +134,9 @@ ZSL_ZSF_SCHEMA = {
                 widgetType = "button",
                 name       = L.OPT_RESET_CATEGORIES,
                 width      = "third",
-                resetKeys  = { "showItems", "showCurrency", "showMoney" },
+                resetKeys  = { "showItems", "showCurrency", "showMoney",
+                               "showPoor", "showCommon", "showUncommon",
+                               "showRare", "showEpic", "showLegendary" },
             },
 
             {
@@ -459,11 +470,12 @@ ZSL_ZSF_SCHEMA = {
         },
     },
 
-    -- ── History ──────────────────────────────────────────────────────────────
-    -- Account-wide loot log retention settings. Not tied to any profile.
+    -- ── Log Storage ─────────────────────────────────────────────────────────────
+    -- Per-type storage filters applied by PruneAllLogs() at login/reload.
+    -- All keys are global-scoped: must use explicit get/set, not key=.
     {
         widgetType = "nav",
-        name       = L.OPT_HISTORY,
+        name       = L.OPT_NAV_STORAGE,
         children   = {
             {
                 widgetType = "text",
@@ -478,6 +490,8 @@ ZSL_ZSF_SCHEMA = {
                 widthBlizzard = "full",
                 name          = L.OPT_KEEP_FOREVER,
                 desc          = L.OPT_KEEP_FOREVER_DESC,
+                confirmOn     = L.OPT_KEEP_FOREVER_WARN_E,
+                confirmOff    = L.OPT_KEEP_FOREVER_WARN_D,
                 get           = function() return zLS.db.global.keepForever end,
                 set           = function(v) zLS.db.global.keepForever = v end,
             },
@@ -494,10 +508,84 @@ ZSL_ZSF_SCHEMA = {
                 set           = function(v) zLS.db.global.historyLength = v end,
                 disableWhen   = function() return zLS.db.global.keepForever end,
             },
+            { widgetType = "header", name = L.OPT_STORAGE_QUALITY_HDR },
+
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_POOR,
+                desc       = L.OPT_STORE_POOR_DESC,
+                get        = function() return zLS.db.global.storePoor end,
+                set        = function(v) zLS.db.global.storePoor = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_COMMON,
+                desc       = L.OPT_STORE_COMMON_DESC,
+                get        = function() return zLS.db.global.storeCommon end,
+                set        = function(v) zLS.db.global.storeCommon = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_UNCOMMON,
+                desc       = L.OPT_STORE_UNCOMMON_DESC,
+                confirmOff = L.STORAGE_WARN_TURN_OFF,
+                get        = function() return zLS.db.global.storeUncommon end,
+                set        = function(v) zLS.db.global.storeUncommon = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_RARE,
+                desc       = L.OPT_STORE_RARE_DESC,
+                confirmOff = L.STORAGE_WARN_TURN_OFF,
+                get        = function() return zLS.db.global.storeRare end,
+                set        = function(v) zLS.db.global.storeRare = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_EPIC,
+                desc       = L.OPT_STORE_EPIC_DESC,
+                confirmOff = L.STORAGE_WARN_TURN_OFF,
+                get        = function() return zLS.db.global.storeEpic end,
+                set        = function(v) zLS.db.global.storeEpic = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_LEGENDARY,
+                desc       = L.OPT_STORE_LEGENDARY_DESC,
+                confirmOff = L.STORAGE_WARN_TURN_OFF,
+                get        = function() return zLS.db.global.storeLegendary end,
+                set        = function(v) zLS.db.global.storeLegendary = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_ARTIFACT,
+                desc       = L.OPT_STORE_ARTIFACT_DESC,
+                confirmOff = L.STORAGE_WARN_TURN_OFF,
+                get        = function() return zLS.db.global.storeArtifact end,
+                set        = function(v) zLS.db.global.storeArtifact = v end,
+            },
+
+            { widgetType = "header", name = L.OPT_STORAGE_TYPES_HDR },
+
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_MONEY,
+                desc       = L.OPT_STORE_MONEY_DESC,
+                get        = function() return zLS.db.global.storeMoney end,
+                set        = function(v) zLS.db.global.storeMoney = v end,
+            },
+            {
+                widgetType = "toggle",
+                name       = L.OPT_STORE_CURRENCY,
+                desc       = L.OPT_STORE_CURRENCY_DESC,
+                confirmOff = L.STORAGE_WARN_TURN_OFF,
+                get        = function() return zLS.db.global.storeCurrency end,
+                set        = function(v) zLS.db.global.storeCurrency = v end,
+            },
         },
     },
 
-    -- ── Profiles ──────────────────────────────────────────────────────────────
+    -- ── Profiles ─────────────────────────────────────────────────────────────
     -- Create, copy, delete, and reset settings profiles.
     {
         widgetType = "nav",

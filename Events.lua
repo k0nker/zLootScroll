@@ -29,12 +29,13 @@ local function RGBToHex(c)
     return string.format("%02x%02x%02x", math.floor(c[1]*255), math.floor(c[2]*255), math.floor(c[3]*255))
 end
 
----@return string formatted [HH:MM:SS] time from a stored 24-hr wallTime string
----@param wallTime string stored "HH:MM:SS" in 24-hr format
-local function FormatEntryTimestamp(wallTime)
-    if not zLS:Get("showTimestamp") then return "" end
-    local h, m, s = wallTime:match("(%d+):(%d+):(%d+)")
-    h = tonumber(h)
+---@return string formatted [HH:MM:SS] time derived from a unix timestamp
+---@param t number unix timestamp
+local function FormatEntryTimestamp(t)
+    if not zLS:Get("showTimestamp") or not t then return "" end
+    local h = tonumber(date("%H", t))
+    local m = date("%M", t)
+    local s = date("%S", t)
     if not zLS:Get("timestamp24hr") then
         h = h % 12
         if h == 0 then h = 12 end
@@ -50,7 +51,23 @@ end
 local function RenderItemEntry(entry)
     if not zLS:Get("showItems") then return nil end
 
-    local r, g, b = entry.r, entry.g, entry.b
+    -- Per-quality-tier display filter. Nil quality (e.g. battlepets) always passes.
+    local q = entry.quality
+    if q == 0 and not zLS:Get("showPoor")     then return nil end
+    if q == 1 and not zLS:Get("showCommon")   then return nil end
+    if q == 2 and not zLS:Get("showUncommon") then return nil end
+    if q == 3 and not zLS:Get("showRare")     then return nil end
+    if q == 4 and not zLS:Get("showEpic")     then return nil end
+    if (q == 5 or q == 6) and not zLS:Get("showLegendary") then return nil end
+
+    local r, g, b
+    if entry.linkType == "battlepet" then
+        r, g, b = 0, 1, 1
+    elseif q then
+        r, g, b = QualityColor(q)
+    else
+        r, g, b = 1, 1, 1
+    end
     if not zLS:Get("colorByQuality") then r, g, b = 1, 1, 1 end
 
     local prefix = ""
@@ -72,7 +89,7 @@ local function RenderItemEntry(entry)
         and ("+|cff" .. RGBToHex(zLS:Get("colorIncrement")) .. entry.amount .. "|r")
         or nil
 
-    local timePart = FormatEntryTimestamp(entry.wallTime)
+    local timePart = FormatEntryTimestamp(entry.t)
 
     local line
     if countStr then
@@ -97,19 +114,23 @@ end
 local function RenderCurrencyEntry(entry)
     if not zLS:Get("showCurrency") then return nil end
 
-    local r, g, b = entry.r, entry.g, entry.b
+    local r, g, b = QualityColor(entry.quality or 1)
     if not zLS:Get("colorByQuality") then r, g, b = 1, 1, 1 end
 
-    local timePart = FormatEntryTimestamp(entry.wallTime)
+    local timePart = FormatEntryTimestamp(entry.t)
 
     local prefix = ""
     if zLS:Get("showItemIcon") and entry.iconFileID then
         prefix = BuildIconPrefix(entry.iconFileID, zLS:Get("iconSize"))
     end
 
-    local nameStr = "|cff" ..
-        string.format("%02x%02x%02x", math.floor(r*255), math.floor(g*255), math.floor(b*255)) ..
-        (entry.name or "") .. "|r"
+    local hexColor = string.format("%02x%02x%02x", math.floor(r*255), math.floor(g*255), math.floor(b*255))
+    local nameStr
+    if entry.currencyID then
+        nameStr = "|Hcurrency:" .. entry.currencyID .. "|h|cff" .. hexColor .. (entry.name or "") .. "|r|h"
+    else
+        nameStr = "|cff" .. hexColor .. (entry.name or "") .. "|r"
+    end
 
     local countStr = entry.amount and ("+|cff" .. RGBToHex(zLS:Get("colorIncrement")) .. entry.amount .. "|r") or nil
     local totalStr = (entry.quantity and entry.quantity > 0)
@@ -136,7 +157,7 @@ end
 local function RenderMoneyEntry(entry)
     if not zLS:Get("showMoney") then return nil end
     local mc       = zLS:Get("colorMoney")
-    local timePart = FormatEntryTimestamp(entry.wallTime)
+    local timePart = FormatEntryTimestamp(entry.t)
     local formatted = C_CurrencyInfo.GetCoinTextureString(entry.totalCopper)
     return timePart .. "+" .. formatted, mc[1], mc[2], mc[3]
 end
@@ -157,8 +178,6 @@ end
 -- ── CHAT_MSG_LOOT ──────────────────────────────────────────────────────────────
 
 local function HandleLoot(msg)
-    if not zLS:Get("showItems") then return end
-
     -- Extract item link from the message (|Hitem:...|h[Name]|h)
     local itemLink = msg:match("|H(item:[^|]+)|h%[([^%]]+)%]|h")
     local itemName = msg:match("|H[^|]+|h%[([^%]]+)%]|h")
@@ -177,22 +196,20 @@ local function HandleLoot(msg)
     local linkType, linkID = strsplit(":", itemLink)
     linkID = tonumber(linkID)
 
-    local r, g, b = 1, 1, 1
-    local texture, ilvl
+    local texture, ilvl, quality
 
     if linkType == "battlepet" then
-        -- Battlepets: fixed teal color; no easy icon retrieval without cache
-        r, g, b = 0.0, 1.0, 1.0
+        -- Battlepets: quality nil (teal color applied at render time via linkType check)
     else
-        local _, _, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink)
-        if quality then
-            r, g, b = QualityColor(quality)
+        local _, _, itemQuality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink)
+        if itemQuality then
+            quality = itemQuality
             texture = itemTexture
         else
             -- Cache miss: use GetItemInfoInstant for icon only
             local _, _, instantQuality, _, _, _, _, instantTexture = C_Item.GetItemInfoInstant(itemLink)
             texture = instantTexture
-            if instantQuality then r, g, b = QualityColor(instantQuality) end
+            quality = instantQuality
         end
         -- Always attempt to resolve ilvl so it can be used on redraw even if
         -- showItemLevel was off at the time of loot.
@@ -201,11 +218,9 @@ local function HandleLoot(msg)
         if lvl and lvl > 0 then ilvl = lvl end
     end
 
-    local mapID     = C_Map.GetBestMapForUnit("player")
-    local mapInfo   = mapID and C_Map.GetMapInfo(mapID)
+    local mapID = C_Map.GetBestMapForUnit("player")
     local entry = {
         t        = time(),
-        wallTime = date("%H:%M:%S"),
         type     = "item",
         itemLink = itemLink,
         itemName = itemName,
@@ -214,22 +229,27 @@ local function HandleLoot(msg)
         texture  = texture,
         total    = 0,
         linkType = linkType,
-        r        = r,
-        g        = g,
-        b        = b,
+        quality  = quality,
         mapID    = mapID or 0,
-        mapName  = mapInfo and mapInfo.name or "",
         zoneName = GetRealZoneText() or "",
     }
     zLS:LogEntry(entry)
 
-    if zLS:Get("showItemTotals") and linkID and linkType ~= "battlepet" then
+    if linkID and linkType ~= "battlepet" then
+        -- Always fetch and store the total so it's available for redraws, regardless of the setting.
         C_Timer.After(0.5, function()
-            local total = C_Item.GetItemCount(itemLink, false, false, true) or 0
-            entry.total = total  -- update in-place; the log holds this same table ref
+            entry.total = C_Item.GetItemCount(itemLink, false, false, true) or 0
+            if zLS:Get("showItemTotals") then
+                -- Re-render the live message once the total is ready.
+                local text, er, eg, eb = RenderItemEntry(entry)
+                if text then zLS:AddMessage(text, er, eg, eb) end
+            end
+        end)
+        -- If totals are off, show immediately without waiting for the timer.
+        if not zLS:Get("showItemTotals") then
             local text, er, eg, eb = RenderItemEntry(entry)
             if text then zLS:AddMessage(text, er, eg, eb) end
-        end)
+        end
     else
         local text, er, eg, eb = RenderItemEntry(entry)
         if text then zLS:AddMessage(text, er, eg, eb) end
@@ -239,8 +259,6 @@ end
 -- ── CHAT_MSG_CURRENCY ──────────────────────────────────────────────────────────
 
 local function HandleCurrency(msg)
-    if not zLS:Get("showCurrency") then return end
-
     local currencyLink, amount
 
     -- Try multiple-amount pattern first
@@ -264,23 +282,18 @@ local function HandleCurrency(msg)
     local info = C_CurrencyInfo.GetCurrencyInfoFromLink(currencyLink)
     if not info then return end
 
-    local r, g, b = QualityColor(info.quality or 1)
-
-    local mapID     = C_Map.GetBestMapForUnit("player")
-    local mapInfo   = mapID and C_Map.GetMapInfo(mapID)
+    local currencyID = currencyLink and tonumber(currencyLink:match("currency:(%d+)"))
+    local mapID      = C_Map.GetBestMapForUnit("player")
     local entry = {
         t          = time(),
-        wallTime   = date("%H:%M:%S"),
         type       = "currency",
         name       = info.name,
         amount     = amount,
         quantity   = info.quantity,
         iconFileID = info.iconFileID,
-        r          = r,
-        g          = g,
-        b          = b,
+        quality    = info.quality or 1,
+        currencyID = currencyID,
         mapID      = mapID or 0,
-        mapName    = mapInfo and mapInfo.name or "",
         zoneName   = GetRealZoneText() or "",
     }
     zLS:LogEntry(entry)
@@ -299,23 +312,18 @@ local function ParseMoneyAmount(msg, globalFmt)
 end
 
 local function HandleMoney(msg)
-    if not zLS:Get("showMoney") then return end
-
     local gold   = ParseMoneyAmount(msg, GOLD_AMOUNT)
     local silver = ParseMoneyAmount(msg, SILVER_AMOUNT)
     local copper = ParseMoneyAmount(msg, COPPER_AMOUNT)
     local totalCopper = (gold * 10000) + (silver * 100) + copper
     if totalCopper <= 0 then return end
 
-    local mapID     = C_Map.GetBestMapForUnit("player")
-    local mapInfo   = mapID and C_Map.GetMapInfo(mapID)
+    local mapID = C_Map.GetBestMapForUnit("player")
     local entry = {
         t           = time(),
-        wallTime    = date("%H:%M:%S"),
         type        = "money",
         totalCopper = totalCopper,
         mapID       = mapID or 0,
-        mapName     = mapInfo and mapInfo.name or "",
         zoneName    = GetRealZoneText() or "",
     }
     zLS:LogEntry(entry)

@@ -44,6 +44,12 @@ local REDRAW_KEYS = {
     showItems      = true,
     showCurrency   = true,
     showMoney      = true,
+    showPoor       = true,
+    showCommon     = true,
+    showUncommon   = true,
+    showRare       = true,
+    showEpic       = true,
+    showLegendary  = true,
 }
 
 -- ── Frame construction ────────────────────────────────────────────────────────
@@ -96,8 +102,13 @@ function zLS:BuildFrame()
     -- Hyperlink tooltips when the frame is locked (mouse handled by drag overlay otherwise)
     f:SetHyperlinksEnabled(true)
     f:SetScript("OnHyperlinkEnter", function(_, link)
+        local currencyID = link:match("^currency:(%d+)$")
         GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-        GameTooltip:SetHyperlink(link)
+        if currencyID then
+            GameTooltip:SetCurrencyByID(tonumber(currencyID))
+        else
+            GameTooltip:SetHyperlink(link)
+        end
         GameTooltip:Show()
     end)
     f:SetScript("OnHyperlinkLeave", function()

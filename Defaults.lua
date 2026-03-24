@@ -23,6 +23,14 @@ zLS.defaults = {
         showCurrency      = true,           -- show currency token gains
         showMoney         = true,           -- show gold/silver/copper gains
 
+        -- ── Quality display filters ───────────────────────────────────────
+        showPoor          = true,           -- show Poor (grey) quality items
+        showCommon        = true,           -- show Common (white) quality items
+        showUncommon      = true,           -- show Uncommon (green) quality items
+        showRare          = true,           -- show Rare (blue) quality items
+        showEpic          = true,           -- show Epic (purple) quality items
+        showLegendary     = true,           -- show Legendary/Artifact (orange/gold) quality items
+
         -- ── Item display options ──────────────────────────────────────────
         showItemIcon      = true,           -- prepend item icon texture to the message
         iconSize          = 14,             -- icon texture size in pixels
@@ -74,6 +82,19 @@ zLS.defaults = {
     global = {
         keepForever   = false,  -- when true, log grows unbounded; false = capped at historyLength
         historyLength = 100,    -- max entries kept per character when keepForever is off
+
+        -- Per-quality storage gates: when false, entries of that tier are pruned at login.
+        storePoor      = true,
+        storeCommon    = true,
+        storeUncommon  = true,
+        storeRare      = true,
+        storeEpic      = true,
+        storeLegendary = true,
+        storeArtifact  = true,
+
+        -- Per-type storage gates.
+        storeMoney     = true,
+        storeCurrency  = true,
     },
 }
 
