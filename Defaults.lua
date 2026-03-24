@@ -63,16 +63,22 @@ zLS.defaults = {
         colorTimestamp    = { 0.01, 0.46, 0.58 },   -- color for the [HH:MM:SS] timestamp
         colorCount        = { 0.68, 0.37, 0.37 },   -- color for the (N) bag and currency totals
         colorIncrement    = { .81, .80, .38 },       -- color for the +N increment on looted stacks
+
+        -- ── Frame position ───────────────────────────────────────────────
+        frame = {
+            point    = "CENTER",
+            relPoint = "CENTER",
+            x        = 0,
+            y        = 100,
+        },
     },
 
     -- ── Per-character data ─────────────────────────────────────────────────
-    -- Frame anchor is per-character so different alts can position it independently.
+    -- Minimap button position is per-character (each alt can park it differently).
     char = {
-        frame = {
-            point    = "BOTTOMRIGHT",
-            relPoint = "BOTTOMRIGHT",
-            x        = -20,
-            y        = 300,
+        minimap = {
+            hide        = false,  -- when true, LibDBIcon hides the button
+            minimapPos  = 220,    -- degrees around the minimap (0 = top, clockwise)
         },
     },
 

@@ -191,14 +191,15 @@ end
 
 function zLS:SavePosition()
     local point, _, relPoint, x, y = self.frame:GetPoint()
-    self._charDB.frame.point    = point
-    self._charDB.frame.relPoint = relPoint
-    self._charDB.frame.x        = x
-    self._charDB.frame.y        = y
+    local pos        = self.db.profile.frame
+    pos.point    = point
+    pos.relPoint = relPoint
+    pos.x        = x
+    pos.y        = y
 end
 
 function zLS:RestorePosition()
-    local pos = self._charDB.frame
+    local pos = self.db.profile.frame
     self.frame:ClearAllPoints()
     self.frame:SetPoint(pos.point, UIParent, pos.relPoint, pos.x, pos.y)
 end

@@ -94,7 +94,48 @@ function zLS:Init()
     self:BuildFrame()
     self:RegisterEvents()
     self:RedrawFeed()  -- restore any persisted entries still within their fade window
+    self:RegisterBroker()
     print("|cff00ccff" .. self.L.ADDON_LOADED .. "|r")
+end
+
+---Register the LibDataBroker launcher object and the LibDBIcon minimap button.
+---Left-click toggles the scroll frame, Shift+left-click toggles the browser,
+---right-click opens the options panel.
+function zLS:RegisterBroker()
+    local LDB  = LibStub("LibDataBroker-1.1", true)
+    local icon = LibStub("LibDBIcon-1.0",       true)
+    if not LDB then return end
+
+    local obj = LDB:NewDataObject("zLootScroll", {
+        type  = "launcher",
+        label = "zLootScroll",
+        icon  = "Interface\\AddOns\\zLootScroll\\zls.png",
+        OnClick = function(_, button)
+            if button == "RightButton" then
+                if zLS.zSFCtx then zLS.zSFCtx:Open() end
+            elseif IsShiftKeyDown() then
+                zLS:OpenBrowser()
+            else
+                if zLS.frame then
+                    if zLS.frame:IsShown() then
+                        zLS.frame:Hide()
+                    else
+                        zLS.frame:Show()
+                    end
+                end
+            end
+        end,
+        OnTooltipShow = function(tt)
+            tt:AddLine("zLootScroll")
+            tt:AddLine(zLS.L.BROKER_TIP_LEFT,  0.8, 0.8, 0.8)
+            tt:AddLine(zLS.L.BROKER_TIP_SHIFT, 0.8, 0.8, 0.8)
+            tt:AddLine(zLS.L.BROKER_TIP_RIGHT, 0.8, 0.8, 0.8)
+        end,
+    })
+
+    if icon and obj then
+        icon:Register("zLootScroll", obj, zLS.db.char.minimap)
+    end
 end
 
 -- ── Slash commands ────────────────────────────────────────────────────────────
@@ -208,9 +249,6 @@ bootFrame:SetScript("OnEvent", function(self, event)
             end
         end
         zLS.db.profile.keepForever = nil  -- clean whatever AceDB loaded into the live profile
-
-        -- Per-character data (frame position).
-        zLS._charDB = zLS.db.char
 
         -- Rolling loot log: account-wide, keyed by realm → character.
         local realm    = GetRealmName()

@@ -11,6 +11,11 @@ zLS.L = {
     CMD_CLEAR               = "Loot feed cleared.",
     CMD_UNKNOWN             = "Unknown command. Type /zls help for usage.",
 
+    -- Data broker tooltip
+    BROKER_TIP_LEFT         = "Left-click: toggle loot feed",
+    BROKER_TIP_SHIFT        = "Shift+click: toggle loot browser",
+    BROKER_TIP_RIGHT        = "Right-click: open options",
+
     -- Browser
     BROWSER_TITLE           = "Loot History Browser",
 
@@ -192,4 +197,24 @@ zLS.L = {
     BROWSER_CURRENCY_INCLUDE = "With Currency",
     BROWSER_CURRENCY_EXCLUDE = "No Currency",
     BROWSER_CURRENCY_ONLY    = "Currency Only",
+
+    -- Browser table column headers
+    BROWSER_COL_DATETIME     = "Date / Time",
+    BROWSER_COL_SERVER       = "Server",
+    BROWSER_COL_CHARACTER    = "Character",
+    BROWSER_COL_ITEM         = "Item",
+    BROWSER_COL_ILVL         = "iLvl",
+    BROWSER_COL_AMOUNT       = "Amount",
+    BROWSER_COL_TOTAL        = "Total",
+    BROWSER_COL_MAP          = "Map",
+    BROWSER_COL_ZONE         = "Zone",
+
+    -- Browser table status notices
+    BROWSER_NO_RESULTS       = "No entries match the current filters.",
+
+    -- Browser filter labels and pagination
+    BROWSER_LABEL_MONEY      = "Money",
+    BROWSER_LABEL_CURRENCY   = "Currency",
+    -- %1$d = current page, %2$d = total pages
+    BROWSER_PAGE_OF          = "Page %d / %d",
 }
