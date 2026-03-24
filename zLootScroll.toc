@@ -26,5 +26,6 @@ Defaults.lua
 zLootScroll.lua
 LootFrame.lua
 Events.lua
+LootBrowser.lua
 zSF_Schema.lua
 zSF_Bridge.lua

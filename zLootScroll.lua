@@ -123,6 +123,10 @@ local function HandleSlash(input)
         zLS:ClearLog()
         print("|cff00ccff" .. zLS.L.CMD_CLEAR .. "|r")
 
+    elseif cmd == "browse" then
+        zLS:OpenBrowser()
+        print("|cff00ccff" .. zLS.L.CMD_BROWSE .. "|r")
+
     elseif cmd == "help" then
         print("|cff00ccff" .. zLS.L.SLASH_HELP .. "|r")
 

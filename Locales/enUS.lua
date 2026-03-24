@@ -3,12 +3,16 @@ zLS = zLS or {}
 zLS.L = {
     -- Addon
     ADDON_LOADED            = "zLootScroll loaded. Type /zls for commands.",
-    SLASH_HELP              = "Usage: /zls  toggle | move | clear | help",
+    SLASH_HELP              = "Usage: /zls  toggle | move | clear | browse | help",
+    CMD_BROWSE              = "Loot browser toggled.",
     CMD_TOGGLE              = "Feed frame toggled.",
     CMD_MOVE_ON             = "Frame is now movable. Drag it to reposition.",
     CMD_MOVE_OFF            = "Frame position locked.",
     CMD_CLEAR               = "Loot feed cleared.",
     CMD_UNKNOWN             = "Unknown command. Type /zls help for usage.",
+
+    -- Browser
+    BROWSER_TITLE           = "Loot History Browser",
 
     -- Settings panel (Options.lua)
     OPT_PANEL_TITLE         = "zLootScroll",
