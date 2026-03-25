@@ -220,4 +220,9 @@ zLS.L = {
     BROWSER_LABEL_CURRENCY   = "Currency",
     -- %1$d = current page, %2$d = total pages
     BROWSER_PAGE_OF          = "Page %d / %d",
+    -- %1$d = first entry on page, %2$d = last entry on page, %3$d = total filtered
+    BROWSER_SHOWING          = "Showing %d-%d of %d",
+    -- %d = total raw entries across all characters
+    BROWSER_TOTAL_ENTRIES    = "%d total entries",
+    BROWSER_REFRESH          = "Refresh",
 }

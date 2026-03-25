@@ -179,12 +179,15 @@ local currentPage = 1
 ---@type table
 local filteredCache = {}
 
+---@type number  total entries in the loot log before any filter is applied
+local rawTotal = 0
+
 --- Forward declaration; BuildTable assigns the real implementation.
 ---@type fun(page: number)
 local RenderPage = function() end
 
 --- Forward declaration; BuildFilterBar assigns the real implementation.
----@type fun(page: number, totalPages: number)
+---@type fun(page: number, totalPages: number, rangeStart: number, rangeEnd: number, total: number, grandTotal: number)
 local UpdatePageControls = function() end
 
 ---Build the two-row filter controls bar.
@@ -247,14 +250,18 @@ local function BuildFilterBar(parent)
     local mnCell   = MakeDDCell(110, L.BROWSER_LABEL_MONEY)
     local crCell   = MakeDDCell(110, L.BROWSER_LABEL_CURRENCY)
 
-    local serverDD   = zAF_BuildDropdown(srvCell, L.BROWSER_ALL,              C_PRIM)
-    local charDD     = zAF_BuildDropdown(chrCell, L.BROWSER_ALL,              C_PRIM)
-    local zoneDD     = zAF_BuildDropdown(znCell,  L.BROWSER_ALL,              C_PRIM)
-    local moneyDD    = zAF_BuildDropdown(mnCell,  L.BROWSER_MONEY_INCLUDE,    C_PRIM)
-    local currencyDD = zAF_BuildDropdown(crCell,  L.BROWSER_CURRENCY_INCLUDE, C_PRIM)
+    local serverDD   = zAF_BuildDropdown(srvCell, L.BROWSER_ALL,              C_PRIM, parent)
+    local charDD     = zAF_BuildDropdown(chrCell, L.BROWSER_ALL,              C_PRIM, parent)
+    local zoneDD     = zAF_BuildDropdown(znCell,  L.BROWSER_ALL,              C_PRIM, parent)
+    local moneyDD    = zAF_BuildDropdown(mnCell,  L.BROWSER_MONEY_INCLUDE,    C_PRIM, parent)
+    local currencyDD = zAF_BuildDropdown(crCell,  L.BROWSER_CURRENCY_INCLUDE, C_PRIM, parent)
 
     local resetBtn = zAF_BuildActionButton(ddRow, L.BROWSER_RESET_FILTERS, nil, 80)
     resetBtn:SetPoint("RIGHT", ddRow, "RIGHT", 0, 0)
+
+    local refreshBtn = zAF_BuildActionButton(ddRow, L.BROWSER_REFRESH, nil, 70)
+    refreshBtn:SetPoint("RIGHT", resetBtn, "LEFT", -4, 0)
+    refreshBtn:SetScript("OnClick", function() RefreshTable() end)
 
     -- ── Date row: range picker on its own line (30px tall) ────────────────────
 
@@ -503,6 +510,7 @@ local function BuildFilterBar(parent)
     search:SetScript("OnEditFocusLost",   function()
         if search:GetText() == "" then searchHint:Show() end
     end)
+    search:SetScript("OnEscapePressed",   function() search:ClearFocus() end)
 
     -- ── Reset button ──────────────────────────────────────────────────────────
 
@@ -563,6 +571,25 @@ local function BuildFilterBar(parent)
     local firstPageBtn = zAF_BuildActionButton(pageRow, "<<", nil, 28)
     firstPageBtn:SetPoint("RIGHT", prevPageBtn, "LEFT", -4, 0)
 
+    local showingText = pageRow:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    showingText:SetWidth(160)
+    showingText:SetJustifyH("LEFT")
+    showingText:SetTextColor(0.45, 0.45, 0.45, 1)
+    showingText:SetPoint("LEFT", pageRow, "LEFT", 0, 0)
+    showingText:SetText("")
+
+    local statSep = pageRow:CreateTexture(nil, "ARTWORK")
+    statSep:SetWidth(1)
+    statSep:SetPoint("TOP",    pageRow, "TOPLEFT",    164, -3)
+    statSep:SetPoint("BOTTOM", pageRow, "BOTTOMLEFT", 164,  3)
+    statSep:SetColorTexture(0.30, 0.30, 0.30, 1)
+
+    local totalText = pageRow:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    totalText:SetJustifyH("LEFT")
+    totalText:SetTextColor(0.45, 0.45, 0.45, 1)
+    totalText:SetPoint("LEFT", pageRow, "LEFT", 170, 0)
+    totalText:SetText("")
+
     firstPageBtn:SetScript("OnClick", function()
         if currentPage > 1 then RenderPage(1) end
     end)
@@ -578,8 +605,10 @@ local function BuildFilterBar(parent)
         if currentPage < tp then RenderPage(tp) end
     end)
 
-    UpdatePageControls = function(page, totalPages)
+    UpdatePageControls = function(page, totalPages, rangeStart, rangeEnd, total, grandTotal)
         pageText:SetText(string.format(L.BROWSER_PAGE_OF, page, totalPages))
+        showingText:SetText(total > 0 and string.format(L.BROWSER_SHOWING, rangeStart, rangeEnd, total) or "")
+        totalText:SetText(string.format(L.BROWSER_TOTAL_ENTRIES, grandTotal))
         SetNavBtnEnabled(firstPageBtn, page > 1)
         SetNavBtnEnabled(prevPageBtn,  page > 1)
         SetNavBtnEnabled(nextPageBtn,  page < totalPages)
@@ -887,6 +916,7 @@ local function BuildTable(parent, filterBar) -- luacheck: ignore filterBar
                 end
             end
         end
+        rawTotal = #rows
 
         -- 2. Filter (cheap guards first).
         filteredCache = {}
@@ -949,7 +979,7 @@ local function BuildTable(parent, filterBar) -- luacheck: ignore filterBar
         sf:SetVerticalScroll(0)
 
         UpdateNotice(total)
-        UpdatePageControls(currentPage, totalPages)
+        UpdatePageControls(currentPage, totalPages, startIdx, startIdx + visCount - 1, total, rawTotal)
     end
 end
 
