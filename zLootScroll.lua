@@ -109,7 +109,7 @@ function zLS:RegisterBroker()
     local obj = LDB:NewDataObject("zLootScroll", {
         type  = "launcher",
         label = "zLootScroll",
-        icon  = "Interface\\AddOns\\zLootScroll\\zls.png",
+        icon  = "Interface\\AddOns\\zLootScroll\\Assets\\zls.png",
         OnClick = function(_, button)
             if button == "RightButton" then
                 if zLS.zSFCtx then zLS.zSFCtx:Open() end
